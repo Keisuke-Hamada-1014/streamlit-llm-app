@@ -30,11 +30,11 @@ if st.button("実行"):
         if selected_mode == "一般的な質問":
             system_prompt = "あなたは優秀なAIアシスタントです。ユーザーの質問に正確に答えてください。"
         else:  # テキスト修正
-            system_prompt = "あなたはプロの編集者です。ユーザーが入力した文章を適切に修正してください。"
+            system_prompt = "あなたはプロの編集者です。ユーザーが入力した文章をより良いものに修正してください。"
 
         messages = [
             SystemMessage(content=system_prompt),
-            HumanMessage(content=input_text)  # こちらも input_text
+            HumanMessage(content=input_text)
         ]
 
         try:
