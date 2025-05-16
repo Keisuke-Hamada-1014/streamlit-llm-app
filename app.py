@@ -11,6 +11,9 @@ llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 st.title("LLM機能を搭載したWebアプリ")
 st.write("動作モードに応じて、LLMが真剣に答えます。")
 
+input_text = None
+input_birthdate = None
+
 selected_mode = st.radio(
     "動作モードを選択してください。",
     ["一般的な質問", "占いモード（たぶん当たる😎）"]
@@ -41,32 +44,29 @@ PATH_MESSAGES = {
 }
 
 
-if st.button("実行"):
-    st.divider()
-
+def generate_response(input_text, selected_mode, input_birthdate):
     if selected_mode == "一般的な質問":
         if not input_text:
-            st.error("テキストを入力してください。")
-        else:
-            system_prompt = "あなたは優秀なAIアシスタントです。ユーザーの質問に正確に答えてください。"
-            messages = [
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=input_text)
-            ]
-            try:
-                result = llm(messages)
-                st.success("LLMの回答：")
-                st.write(result.content)
-            except Exception as e:
-                st.error(f"エラーが発生しました: {e}")
+            return "テキストを入力してください。"
+        system_prompt = "あなたは優秀なAIアシスタントです。ユーザーの質問に正確に答えてください。"
+        messages = [
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=input_text)
+        ]
+        return llm(messages).content
 
     else:
         # ここから占いモード
         if not input_birthdate:
-            st.error("生年月日を選択してください。")
+            return "生年月日を選択してください。"
         else:
             y, m, d = input_birthdate.year, input_birthdate.month, input_birthdate.day
             num = path_number(y, m, d)
-            message = PATH_MESSAGES.get(num, "不明な生年月日です。")
-            st.success("あなたの生年月日占い🔮")
-            st.write(f"占い結果：{message}")
+            return PATH_MESSAGES.get(num, "不明な生年月日です。")
+
+if st.button("実行"):
+    st.divider()
+    response = generate_response(input_text, selected_mode, input_birthdate)
+    st.write("結果：")
+    st.write(response)
+    st.divider()
